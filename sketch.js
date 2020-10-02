@@ -6,7 +6,7 @@ var trex, trex_running, trex_collided;
 var ground, invisibleGround, groundImage;
 
 var cloudsGroup, cloudImage;
-var obstaclesGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
+var obstaclesGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6, jump, checkpoint, die;
 
 var score=0;
 
@@ -15,6 +15,13 @@ var gameOver, restart;
 localStorage["HighestScore"] = 0;
 
 function preload(){
+  
+  jump = loadSound("jump.mp3");
+  checkpoint = loadSound("checkPoint.mp3");
+  die = loadSound("die.mp3");
+  
+  
+  
   trex_running =   loadAnimation("trex1.png","trex3.png","trex4.png");
   trex_collided = loadAnimation("trex_collided.png");
   
@@ -76,9 +83,14 @@ function draw() {
   if (gameState===PLAY){
     score = score + Math.round(getFrameRate()/60);
     ground.velocityX = -(6 + 3*score/100);
+    
+    if(score > 0 && score % 100 === 0) {
+     checkpoint.play(); 
+    }
   
     if(keyDown("space") && trex.y >= 159) {
       trex.velocityY = -12;
+      jump.play();
     }
   
     trex.velocityY = trex.velocityY + 0.8
@@ -93,6 +105,7 @@ function draw() {
   
     if(obstaclesGroup.isTouching(trex)){
         gameState = END;
+        die.play();
     }
   }
   else if (gameState === END) {
